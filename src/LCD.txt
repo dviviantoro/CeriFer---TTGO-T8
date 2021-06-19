@@ -1,0 +1,64 @@
+#include <Arduino.h>
+#include <Adafruit_GFX.h>    
+#include <Adafruit_ST7735.h> 
+#include <WiFi.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_I2CDevice.h>
+
+#define TFT_CS        14
+#define TFT_RST       15 
+#define TFT_DC        32
+
+Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
+const char* ssid = "Dasar";
+const char* password = "liquidgas";
+
+void testdrawtext(int x, int y, char * text, uint16_t color, int size);
+
+void setup() {
+
+  Serial.begin(9600);
+  //Serial.print(F("Hello! ST77xx TFT Test"));
+  
+  tft.initR(INITR_BLACKTAB); 
+  tft.fillScreen(ST7735_BLACK);
+  testdrawtext(20,10,"Proses", ST7735_BLUE,2);
+  testdrawtext(0,30,"Fermentasi", ST7735_GREEN,2); 
+  delay(5000);
+  tft.fillScreen(ST7735_BLACK);
+  tft.setTextColor(ST7735_WHITE);
+  tft.setTextSize(0);
+  tft.setCursor(0,10);
+  tft.print("Connecting to ");
+  tft.println(ssid);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  
+  while(WiFi.status() != WL_CONNECTED){
+
+    tft.print(".");
+    delay(500);
+  }
+  tft.setCursor(0,30);
+  tft.println("WiFi connected");
+  tft.print("IP: ");
+  tft.println(WiFi.localIP()); 
+  tft.print("Status: ");
+  tft.println("ONLINE");
+  delay(5000);
+}
+
+void loop() {
+
+}
+
+void testdrawtext(int x, int y, char *text, uint16_t color, int size) {
+  
+  tft.setCursor(x, y);
+  tft.setTextColor(color);
+  tft.setTextWrap(true);
+  tft.setTextSize(size);
+  tft.print(text);
+  
+}
